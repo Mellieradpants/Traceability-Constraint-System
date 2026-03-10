@@ -1,9 +1,9 @@
-import json
 
-document = """
-Section 3: Applicants must submit documentation within 30 days.
-Section 5: The agency may extend deadlines under exceptional circumstances.
-"""
+ import json
+from pathlib import Path
+
+document_path = Path("examples/example-policy.txt")
+document = document_path.read_text()
 
 anchors = [
     {
@@ -20,6 +20,18 @@ anchors = [
 
 analysis = []
 
+def detect_drift(anchor_text: str, operational_meaning: str) -> bool:
+    anchor_text = anchor_text.lower()
+    operational_meaning = operational_meaning.lower()
+
+    if "30 days" in anchor_text and "30 days" not in operational_meaning:
+        return True
+
+    if "extend deadlines" in anchor_text and "extend" not in operational_meaning:
+        return True
+
+    return False
+
 for anchor in anchors:
     if "30 days" in anchor["text"]:
         observation = "A strict submission deadline is defined."
@@ -31,15 +43,25 @@ for anchor in anchors:
         observation = "No rule detected."
         operational = "No operational meaning extracted."
 
-    analysis.append({
+    drift_detected = detect_drift(anchor["text"], operational)
+
+    result = {
         "anchor": anchor,
         "observation": observation,
-        "operationalMeaning": operational
-    })
+        "operationalMeaning": operational,
+        "driftDetected": drift_detected
+    }
+
+    if drift_detected:
+        result["recoveryAction"] = "Return to tether point before continuing analysis."
+    else:
+        result["recoveryAction"] = "Tether verified."
+
+    analysis.append(result)
 
 output = {
-    "document": "example-policy.txt",
+    "document": str(document_path),
     "analysis": analysis
 }
 
-print(json.dumps(output, indent=2))
+print(json.dumps(output, indent=2))       
