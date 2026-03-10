@@ -1,6 +1,29 @@
-# semantic-tether-point
 # Semantic Tether Point
+Example Output
 
+{
+  "document": "example-policy.txt",
+  "analysis": [
+    {
+      "anchor": {
+        "type": "quote",
+        "location": "Section 3",
+        "text": "Applicants must submit documentation within 30 days."
+      },
+      "observation": "A strict submission deadline is defined.",
+      "operationalMeaning": "Anyone applying must provide the required documents within 30 days or the application may not be accepted."
+    },
+    {
+      "anchor": {
+        "type": "quote",
+        "location": "Section 5",
+        "text": "The agency may extend deadlines under exceptional circumstances."
+      },
+      "observation": "Deadline extensions are allowed.",
+      "operationalMeaning": "The agency has discretion to allow more time if unusual conditions occur."
+    }
+  ]
+}
 Semantic Tether Point is an experimental architecture for grounding AI outputs to explicit reference anchors. Instead of allowing models to summarize freely, the system requires every interpretation to remain tied to verifiable signals such as source text, timestamps, metadata, or document sections.
 
 The goal is to prevent semantic drift and make AI reasoning traceable.
