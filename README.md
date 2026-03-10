@@ -1,3 +1,16 @@
+What This Project Explores
+
+Semantic Tether Point explores a simple constraint for AI systems:
+
+Interpretation must remain connected to a verifiable source anchor.
+
+When an interpretation becomes uncertain or detached from its source, the system must return to the last verified tether point before continuing analysis.
+
+This repository contains a minimal prototype demonstrating this behavior using structured anchors and tethered interpretation.
+
+
+
+
 # Semantic Tether Point
 Example Output
 
@@ -80,3 +93,5 @@ Anchored reasoning allows users to trace how AI arrived at a conclusion. This im
 ## Status
 
 Early prototype and architecture exploration.
+
+
