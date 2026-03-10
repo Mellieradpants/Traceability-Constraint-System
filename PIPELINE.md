@@ -48,3 +48,19 @@ Output Structure
 Anchor  
 → Observation  
 → Operational Meaning
+
+Pipeline Diagram
+
+Document
+   ↓
+Anchor Extraction
+   ↓
+Tether Verification
+   ↓
+Tethered Interpretation
+   ↓
+Structured Output
+   ↓
+Drift Check
+   ↓
+Return to Tether Point (if needed)
