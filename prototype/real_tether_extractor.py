@@ -3,7 +3,16 @@ import json
 from pathlib import Path
 
 
-def extract_anchors(document_text: str):
+CONSTRAINT_KEYWORDS = [
+    "must",
+    "shall",
+    "required",
+    "prohibited",
+    "cannot"
+]
+
+
+def extract_constraint_anchors(document_text: str):
     anchors = []
     lines = [line.strip() for line in document_text.splitlines()]
 
@@ -11,13 +20,18 @@ def extract_anchors(document_text: str):
         if not line:
             continue
 
-        if any(keyword in line.lower() for keyword in [
-            "must", "shall", "required", "prohibited", "cannot"
-        ]):
+        line_lower = line.lower()
+        matched_signals = [
+            keyword for keyword in CONSTRAINT_KEYWORDS
+            if keyword in line_lower
+        ]
+
+        if matched_signals:
             anchors.append({
                 "line": i + 1,
                 "text": line,
-                "type": "constraint"
+                "type": "constraint",
+                "matchedSignals": matched_signals
             })
 
     return anchors
@@ -26,7 +40,7 @@ def extract_anchors(document_text: str):
 def build_analysis(document_path: Path):
     text = document_path.read_text(encoding="utf-8")
 
-    anchors = extract_anchors(text)
+    anchors = extract_constraint_anchors(text)
 
     return {
         "document": str(document_path),
@@ -53,3 +67,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
