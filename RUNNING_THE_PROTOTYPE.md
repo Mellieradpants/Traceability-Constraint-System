@@ -1,43 +1,83 @@
 Running the Prototype
 
-This repository includes a minimal demonstration of the Semantic Tether Point concept.
+What This Does
 
-The prototype script shows how anchored interpretation can be generated from defined tether points.
+This script shows how the Semantic Tether Point system works on a small example.
 
+It takes source text, finds anchors, and produces output that stays tied to those anchors.
 
 Requirements
 
 Python 3.x
 
-
 Run the Prototype
 
-From the repository root directory run:
+From the root of the repository:
 
 python prototype/tether_extractor.py
 
+What You Will See
 
-Expected Result
-
-The script will produce structured output showing:
+The script outputs structured results with three fields:
 
 anchor
+
 observation
+
 operationalMeaning
 
+Each result is tied directly to a piece of source text.
 
 Example Flow
 
 document
-→ anchor reference
-→ interpretation
-→ structured tethered output
+→ find anchor
+→ detect what is in the text
+→ restate it in plain language
+→ output linked to the anchor
 
+Core Rule Being Tested
+
+Every output must:
+
+point to a specific source anchor
+
+only include what that anchor supports
+
+If the source text does not support something, it is not included in the output.
+
+Important Constraint
+
+No added meaning
+
+No assumptions
+
+No interpretation beyond what is written
+
+If a result cannot be traced to the source text, it is not produced.
 
 Purpose
 
-This prototype demonstrates the core rule of the system:
+This prototype shows how to keep outputs tied to source text.
 
-Interpretation must remain connected to a tether point.
+It demonstrates how to:
 
-If interpretation becomes detached from its source, analysis must return to the last verified tether point.
+prevent meaning from drifting
+
+make outputs traceable
+
+keep the system consistent and repeatable
+
+This version removes:
+
+“interpretation drift” language as a concept
+
+“return to tether point” metaphor
+
+And replaces it with:
+
+hard rules
+
+observable steps
+
+deterministic behavior
