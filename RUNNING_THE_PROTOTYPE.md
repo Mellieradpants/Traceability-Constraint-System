@@ -14,7 +14,22 @@ Run the Prototype
 
 From the root of the repository:
 
-python prototype/tether_extractor.py
+python real_tether_extractor_v2.py <document
+ Current Output Format
+
+The current extractor outputs results using the shared tetherAnchor structure.
+
+Each result includes:
+- group
+- type
+- sourceSystem
+- sourceLocation
+- anchorText
+- structuredValue
+- matchedSignals
+- traceReason
+- driftDetected
+- status                                    
 
 What You Will See
 
@@ -29,6 +44,8 @@ operationalMeaning
 Each result is tied directly to a piece of source text.
 
 Example Flow
+
+The current extr
 
 document
 → find anchor
