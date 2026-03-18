@@ -14,8 +14,9 @@ Run the Prototype
 
 From the root of the repository:
 
-python real_tether_extractor_v2.py <document
- Current Output Format
+python real_tether_extractor_v2.py <document>
+ 
+Current Output Format
 
 The current extractor outputs results using the shared tetherAnchor structure.
 
