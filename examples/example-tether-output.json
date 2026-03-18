@@ -1,5 +1,5 @@
 {
-  "document": "example-policy.txt",
+  "document": "examples/example-policy.txt",
   "analysis": [
     {
       "anchor": {
@@ -7,8 +7,8 @@
         "location": "Section 3",
         "text": "Applicants must submit documentation within 30 days."
       },
-      "observation": "A strict submission deadline is defined.",
-      "operationalMeaning": "Anyone applying must provide the required documents within 30 days or the application may not be accepted."
+      "observation": "Includes a requirement ('must') and a time limit ('within 30 days').",
+      "operationalMeaning": "Applicants are required to submit documentation within 30 days."
     },
     {
       "anchor": {
@@ -16,8 +16,8 @@
         "location": "Section 5",
         "text": "The agency may extend deadlines under exceptional circumstances."
       },
-      "observation": "Deadline extensions are allowed.",
-      "operationalMeaning": "The agency has discretion to allow more time if unusual conditions occur."
+      "observation": "Includes permission or discretion ('may') and a condition ('under exceptional circumstances').",
+      "operationalMeaning": "The agency is allowed to extend deadlines under exceptional circumstances."
     }
   ]
 }
