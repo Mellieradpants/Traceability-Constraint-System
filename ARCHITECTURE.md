@@ -1,36 +1,29 @@
-
-ARCHITECTURE.md
-Semantic Tether Point Architecture
+Traceability Constraint System — Architecture
 
 Goal
 
-Keep all outputs tied directly to source text.
+Ensure all outputs are directly traceable to explicit source text.
 
-The system only outputs what can be traced to a specific anchor.
+The system only produces outputs supported by a specific anchor.
 
 Problem
 
-AI systems often produce summaries or explanations without showing where the information came from.
+Many systems produce summaries or explanations without linking outputs to source text.
 
-This breaks traceability and allows meaning to drift away from the source.
+This breaks traceability and allows meaning to drift from the source.
 
 Core Rule
 
 Every output must:
 
-point to a specific source anchor
-
-only include what that anchor supports
+reference a specific source anchor
+include only what the anchor supports
 
 If the source does not support it, it is not included.
 
 Core Flow
 
-Document
-→ Anchor Extraction
-→ Feature Detection
-→ Constrained Restatement
-→ Structured Output
+Document → Anchor Extraction → Feature Detection → Constrained Restatement → Structured Output
 
 Anchor Types
 
@@ -39,13 +32,9 @@ An anchor is a direct reference to source content.
 Examples:
 
 quoted text
-
 document sections
-
 page numbers
-
 timestamps
-
 metadata fields
 
 Output Structure
@@ -59,18 +48,24 @@ Observation
 What is explicitly present in the text
 
 Operational Meaning
-Plain-language restatement of the same content
+Plain-language restatement of the same content without adding or altering information
 
 System Behavior
 
-anchors are identified before any output is generated
-
+anchors are identified before any output is produced
 all outputs must link to an anchor
-
 no output may include information not present in the anchor
-
 if no valid anchor exists, no output is produced
 
 Design Principle
 
-If it cannot be traced to the source, it is not included
+If it cannot be traced to the source, it is not included.
+
+What I tightened (so you can track it):
+
+renamed to Traceability Constraint System
+replaced “generated” → “produced”
+removed conversational phrasing
+added “without adding or altering information” to lock Rule 4 into structure
+aligned language with README + DESIGN + PIPELINE
+
