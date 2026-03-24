@@ -1,9 +1,23 @@
-import sys
+"""
+Traceability Constraint System — Core Engine
+
+Purpose:
+Produce outputs that are directly traceable to explicit source text.
+
+Constraints:
+- no inference
+- no added information
+- no narrative
+- no unstated meaning
+
+If content is not supported by source text, it is not included.
+"""
+
 import json
 from pathlib import Path
 
 
-def extract_anchors(document_text: str):
+def extract_explicit_signal_anchors(document_text: str):
     anchors = []
     lines = [line.strip() for line in document_text.splitlines()]
 
@@ -33,53 +47,55 @@ def extract_anchors(document_text: str):
     return anchors
 
 
-def build_analysis(document_path: Path):
+def build_traceable_output(document_path: Path):
     text = document_path.read_text(encoding="utf-8")
-    anchors = extract_anchors(text)
+    anchors = extract_explicit_signal_anchors(text)
 
-    analysis = []
+    results = []
 
     for anchor in anchors:
         result = {
             "tetherAnchor": {
                 "group": "meaning",
                 "type": "text_span",
-                "sourceSystem": "real_tether_extractor_v2",
+                "sourceSystem": "traceability_constraint_system",
                 "sourceLocation": f"line_{anchor['line']}",
                 "anchorText": anchor["text"],
                 "structuredValue": anchor["text"],
                 "matchedSignals": anchor["matchedSignals"],
-                "traceReason": "Matched explicit constraint language in source text"
+                "traceReason": "Matched explicit signal language in source text"
             },
             "driftDetected": False,
             "status": "ok"
         }
 
-        analysis.append(result)
+        results.append(result)
 
     return {
         "document": str(document_path),
         "anchorCount": len(anchors),
-        "analysis": analysis
+        "analysis": results
     }
 
 
 def main():
+    import sys
+
     if len(sys.argv) < 2:
-        print("Usage: python real_tether_extractor_v2.py <document>")
-        sys.exit(1)
+        print("Usage: python <script>.py <document>")
+        return
 
     document_path = Path(sys.argv[1])
 
     if not document_path.exists():
         print(f"Error: file not found: {document_path}")
-        sys.exit(1)
+        return
 
-    output = build_analysis(document_path)
+    output = build_traceable_output(document_path)
     print(json.dumps(output, indent=2))
 
 
 if __name__ == "__main__":
     main()
-
-   
+            
+  
