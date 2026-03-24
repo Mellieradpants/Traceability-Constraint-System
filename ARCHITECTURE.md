@@ -61,11 +61,5 @@ Design Principle
 
 If it cannot be traced to the source, it is not included.
 
-What I tightened (so you can track it):
-
-renamed to Traceability Constraint System
-replaced “generated” → “produced”
-removed conversational phrasing
-added “without adding or altering information” to lock Rule 4 into structure
 aligned language with README + DESIGN + PIPELINE
 
