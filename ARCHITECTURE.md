@@ -1,10 +1,33 @@
-Traceability Constraint System — Design Rules
+Traceability Constraint System — Architecture
 
-Rule 1: Output Requires an Anchor
+Goal
 
-Every output must reference a verified anchor.
+Ensure all outputs are directly traceable to explicit source text.
 
-An anchor is a direct reference to source text.
+The system only produces outputs supported by a specific anchor.
+
+Problem
+
+Many systems produce outputs without linking them to source text.
+
+This breaks traceability and allows meaning to drift from the source.
+
+Core Rule
+
+Every output must:
+
+reference a specific source anchor
+include only what the anchor supports
+
+If the source does not support it, it is not included.
+
+Core Flow
+
+Document → Anchor Extraction → Feature Detection → Constrained Restatement → Structured Output
+
+Anchor Types
+
+An anchor is a direct reference to source content.
 
 Examples:
 
@@ -12,68 +35,28 @@ quoted text
 document sections
 page numbers
 timestamps
-structured metadata fields
+metadata fields
 
-If no anchor exists, no output is produced.
+Output Structure
 
-Rule 2: Anchor Before Output
+Each result includes three parts:
 
-The system must extract anchors before producing any output.
+Anchor
+Source text or location
 
-Pipeline:
+Observation
+What is explicitly present in the text
 
-Document → Anchor Extraction → Feature Detection → Constrained Restatement → Structured Output
+Source Derived Text
+Plain-language restatement of the same content without adding or altering information
 
-No output is produced before an anchor is identified.
+System Behavior
 
-Rule 3: Traceability
+anchors are identified before any output is produced
+all outputs must link to an anchor
+no output may include information not present in the anchor
+if no valid anchor exists, no output is produced
 
-Every part of the output must be traceable to its anchor.
-
-This includes:
-
-words used in the restatement
-conditions
-requirements
-time references
-
-If a part of the output cannot be traced to the anchor, it is removed.
-
-Rule 4: No Added Information
-
-The system does not add, remove, or alter information.
-
-Allowed:
-
-direct restatement using the same information
-reordering of phrasing without changing meaning
-
-Not allowed:
-
-inferred outcomes
-implied consequences
-external context
-added or removed conditions
-wording changes that alter meaning
-
-Rule 5: Drift Control
-
-Before output is finalized, the system verifies:
-
-all content is supported by the anchor
-no additional information was introduced
-
-If either condition fails, the output is blocked.
-
-Rule 6: No Guessing
-
-The system does not guess, infer, or fill missing information.
-
-If the source text is incomplete or unclear:
-
-only explicit content is output
-or no output is produced
-
-Core Rule
+Design Principle
 
 If it cannot be traced to the source, it is not included.
