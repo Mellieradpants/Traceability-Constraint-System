@@ -1,32 +1,26 @@
+example-tether-output.json
+
 {
-  "analysis": [
-    {
-      "tetherAnchor": {
-        "group": "meaning",
-        "type": "text_span",
-        "sourceSystem": "semantic_tether_engine",
-        "sourceLocation": "line_1",
-        "anchorText": "Applicants must submit documentation within 30 days.",
-        "structuredValue": "Applicants are required to submit documentation within 30 days.",
-        "matchedSignals": ["must"],
-        "traceReason": "Includes a requirement ('must'). Includes a time constraint."
-      },
-      "driftDetected": false,
-      "status": "ok"
-    },
-    {
-      "tetherAnchor": {
-        "group": "meaning",
-        "type": "text_span",
-        "sourceSystem": "semantic_tether_engine",
-        "sourceLocation": "line_3",
-        "anchorText": "The agency may extend deadlines under exceptional circumstances.",
-        "structuredValue": "The agency is allowed to extend deadlines under exceptional circumstances.",
-        "matchedSignals": ["may"],
-        "traceReason": "Includes permission ('may'). Includes a condition."
-      },
-      "driftDetected": false,
-      "status": "ok"
-    }
-  ]
+"document": "example-policy.txt",
+"analysis": [
+{
+"anchor": {
+"type": "quote",
+"location": "Section 3",
+"text": "Applicants must submit documentation within 30 days."
+},
+"observation": "Includes a requirement ('must') and a time constraint ('within 30 days').",
+"operationalMeaning": "Applicants must submit documentation within 30 days."
+},
+{
+"anchor": {
+"type": "quote",
+"location": "Section 5",
+"text": "The agency may extend deadlines under exceptional circumstances."
+},
+"observation": "Includes conditional language ('may') and a condition ('under exceptional circumstances').",
+"operationalMeaning": "The agency may extend deadlines under exceptional circumstances."
 }
+]
+}
+      
