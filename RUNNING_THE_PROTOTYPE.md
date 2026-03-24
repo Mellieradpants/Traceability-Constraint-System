@@ -1,12 +1,21 @@
+Traceability Constraint System — Running the Prototype
+
+Overview
+
 This prototype uses the v2 extractor as the current reference implementation.
 
-Running the Prototype
+It demonstrates how the system processes source text and produces traceable outputs.
 
 What This Does
 
-This script shows how the Semantic Tether Point system works on a small example.
+The script:
 
-It takes source text, finds anchors, and produces output that stays tied to those anchors.
+takes source text
+identifies anchors
+detects explicit content
+produces outputs linked directly to anchors
+
+All outputs remain tied to source text.
 
 Requirements
 
@@ -16,88 +25,75 @@ Run the Prototype
 
 From the root of the repository:
 
-python real_tether_extractor_v2.py <document>
- 
+python real_tether_extractor_v2.py
+
 Current Output Format
 
-The current extractor outputs results using the shared tetherAnchor structure.
+The extractor outputs results using the tetherAnchor structure.
 
 Each result includes:
-- group
-- type
-- sourceSystem
-- sourceLocation
-- anchorText
-- structuredValue
-- matchedSignals
-- traceReason
-- driftDetected
-- status                                    
 
-What You Will See
+group
+type
+sourceSystem
+sourceLocation
+anchorText
+structuredValue
+matchedSignals
+traceReason
+driftDetected
+status
 
-The script outputs structured results with three fields:
+Output Fields
+
+Each result contains:
 
 anchor
+Source text or location
 
 observation
+What is explicitly present in the text
 
 operationalMeaning
-
-Each result is tied directly to a piece of source text.
+Plain-language restatement of the same content without adding or altering information
 
 Example Flow
 
-The current extr
+Document → Anchor Extraction → Feature Detection → Constrained Restatement → Structured Output
 
-document
-→ find anchor
-→ detect what is in the text
-→ restate it in plain language
-→ output linked to the anchor
-
-Core Rule Being Tested
+Core Rule
 
 Every output must:
 
-point to a specific source anchor
+reference a specific source anchor
+include only what the anchor supports
 
-only include what that anchor supports
+If the source text does not support it, it is not included.
 
-If the source text does not support something, it is not included in the output.
+Constraints
 
-Important Constraint
-
-No added meaning
-
-No assumptions
-
-No interpretation beyond what is written
+no added meaning
+no assumptions
+no inference
+no interpretation beyond what is explicitly stated
 
 If a result cannot be traced to the source text, it is not produced.
 
 Purpose
 
-This prototype shows how to keep outputs tied to source text.
+This prototype demonstrates:
 
-It demonstrates how to:
+traceable outputs
+constraint-based processing
+prevention of meaning drift
+consistent, repeatable behavior
 
-prevent meaning from drifting
+Notes
 
-make outputs traceable
+This version:
 
-keep the system consistent and repeatable
+removes interpretation as a processing concept
+removes metaphor-based language
+replaces soft guidance with deterministic rules
+enforces pass/fail constraint behavior
 
-This version removes:
-
-“interpretation drift” language as a concept
-
-“return to tether point” metaphor
-
-And replaces it with:
-
-hard rules
-
-observable steps
-
-deterministic behavior
