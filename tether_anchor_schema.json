@@ -1,12 +1,23 @@
 {
   "tetherAnchor": {
-    "group": "origin | meaning | verification",
+    "group": {
+      "type": "string",
+      "allowedValues": ["origin", "meaning", "verification"]
+    },
     "type": "string",
     "sourceSystem": "string",
     "sourceLocation": "string",
     "anchorText": "string",
-    "structuredValue": "string",
-    "matchedSignals": [],
-    "traceReason": "string"
+    "sourceDerivedText": "string",
+    "matchedSignals": {
+      "type": "array",
+      "items": "string"
+    },
+    "systemTraceReason": "string"
+  },
+  "driftDetected": "boolean",
+  "status": {
+    "type": "string",
+    "allowedValues": ["ok", "blocked"]
   }
 }
