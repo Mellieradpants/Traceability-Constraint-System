@@ -140,10 +140,16 @@ def build_traceable_output(document_path: Path):
         if "pageReference" in anchor:
             tether_anchor["pageReference"] = anchor["pageReference"]
 
+        parse = analyze_anchor(anchor)
+        review = review_parse_output(parse, tether_anchor)
+
         result = {
             "tetherAnchor": tether_anchor,
-            "driftDetected": False,
-            "status": "ok"
+            "parse": parse,
+            "missingSignals": review["missingSignals"],
+            "controlFlags": review["controlFlags"],
+            "driftDetected": review["driftDetected"],
+            "status": review["status"]
         }
 
         results.append(result)
@@ -153,7 +159,6 @@ def build_traceable_output(document_path: Path):
         "anchorCount": len(anchors),
         "analysis": results
     }
-
 
 def main():
     if len(sys.argv) < 2:
