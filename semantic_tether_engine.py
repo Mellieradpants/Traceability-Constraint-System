@@ -7,6 +7,8 @@ import sys
 import json
 from pathlib import Path
 
+from traceability_parser import analyze_anchor, review_parse_output
+
 
 def is_metadata_field(line: str) -> bool:
     if ":" not in line:
