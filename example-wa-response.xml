@@ -1,1 +1,10 @@
-
+<Legislation>
+  <BillId>HB 1234</BillId>
+  <BillNumber>1234</BillNumber>
+  <ShortDescription>An agency must publish an annual report.</ShortDescription>
+  <LongDescription>The agency must publish an annual report by January 1, 2027.</LongDescription>
+  <LegalTitle>An act relating to annual agency reporting.</LegalTitle>
+  <CurrentStatus>Introduced</CurrentStatus>
+  <Sponsor>Jane Doe</Sponsor>
+  <IntroducedDate>2026-01-15</IntroducedDate>
+</Legislation>
