@@ -106,11 +106,22 @@ Fetch → Adapter → Parser → Structured Output
 
 ## Project Structure
 
+ ## Project Structure
+
 fetch_wa_legislation.py  
-wa_legislature_adapter.py  
+→ Fetches live legislative XML and writes raw bytes to disk
+
+prototype/wa_legislature_adapter.py  
+→ Converts XML into normalized text blocks
+
 test_live_wa_adapter.py  
+→ Executes adapter, validates parsing, and writes normalized output
+
 semantic_tether_engine.py  
+→ Processes normalized text into structured signals and anchors
+
 traceability_parser.py  
+→ Core parsing and constraint enforcement logic
 
 ---
 
