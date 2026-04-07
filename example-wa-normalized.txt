@@ -1,0 +1,8 @@
+bill_id: HB 1234
+bill_number: 1234
+short_description: An agency must publish an annual report.
+long_description: The agency must publish an annual report by January 1, 2027.
+legal_title: An act relating to annual agency reporting.
+current_status: Introduced
+sponsor: Jane Doe
+introduced_date: 2026-01-15

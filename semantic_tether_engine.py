@@ -128,7 +128,7 @@ def build_traceable_output(document_path: Path):
 
     for anchor in anchors:
         tether_anchor = {
-            "group": "meaning",
+            "group": "parsing",
             "type": anchor["type"],
             "sourceSystem": "traceability_constraint_system",
             "executionContext": "prototype_extractor",

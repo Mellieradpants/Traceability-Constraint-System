@@ -1,5 +1,5 @@
 from pathlib import Path
-from prototype.wa_legislature_adapter import parse_wa_legislature_xml, normalized_text_from_blocks
+from wa_legislature_adapter import parse_wa_legislature_xml, normalized_text_from_blocks
 
 xml_text = Path("examples/example-wa-response.xml").read_text(encoding="utf-8")
 normalized = parse_wa_legislature_xml(xml_text)
