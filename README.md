@@ -104,8 +104,6 @@ Fetch → Adapter → Parser → Structured Output
 
 ---
 
-## Project Structure
-
  ## Project Structure
 
 fetch_wa_legislation.py  
