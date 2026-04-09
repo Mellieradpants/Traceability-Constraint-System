@@ -8,23 +8,25 @@
     :root {
       --bg: #0e0d0b;
       --panel: #13120f;
-      --panel-2: #171511;
       --line: #1f1c17;
       --text: #c8c0a8;
       --muted: #6f675a;
-
       --origin: #5d8a68;
       --parse: #c8a86b;
       --meaning: #a55a5a;
-
       --subsection: #7ba7bc;
       --clause: #9b8bb4;
       --subclause: #b88b72;
     }
 
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: Georgia, serif; }
-    body { min-height: 100vh; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, serif;
+    }
 
     .topbar {
       display: flex;
@@ -36,11 +38,7 @@
       background: #0b0b09;
     }
 
-    .title {
-      font-size: 19px;
-      color: var(--parse);
-    }
-
+    .title { font-size: 19px; color: var(--parse); }
     .subtitle {
       font-family: monospace;
       font-size: 10px;
@@ -58,7 +56,7 @@
 
     .btn, .file-label {
       border: 1px solid var(--line);
-      background: var(--panel-2);
+      background: #171511;
       color: var(--text);
       border-radius: 6px;
       padding: 8px 12px;
@@ -246,8 +244,14 @@
     <div class="actions">
       <label class="file-label">
         Load output_structured.json
-        <input id="fileInput" class="file-input" type="file" accept=".json,application/json" />
+        <input id="jsonInput" class="file-input" type="file" accept=".json,application/json" />
       </label>
+
+      <label class="file-label">
+        Load WA XML
+        <input id="xmlInput" class="file-input" type="file" accept=".xml,text/xml" />
+      </label>
+
       <button id="demoBtn" class="btn" type="button">Load Demo</button>
       <div id="status" class="status">No file loaded</div>
     </div>
@@ -257,7 +261,7 @@
     <section class="panel">
       <div class="panel-header origin-header">Origin / Structure</div>
       <div class="panel-body" id="treePanel">
-        <div class="empty">Load your existing JSON file.</div>
+        <div class="empty">Load your JSON or WA XML file.</div>
       </div>
     </section>
 
@@ -279,7 +283,9 @@
   <script>
     const state = {
       data: null,
-      selectedId: null
+      selectedId: null,
+      sourceType: null,
+      sourceName: null
     };
 
     function escapeHtml(str) {
@@ -336,16 +342,189 @@
       return values.map(v => `<div class="signal-block ${cls}">${escapeHtml(v)}</div>`).join("");
     }
 
+    function detectStructureType(text) {
+      const t = text.trim();
+
+      if (t.startsWith("Sec.") || t.startsWith("SECTION")) return "section";
+      if (/^\(\d+\)$/.test(t)) return "subsection";
+      if (/^\(\d+\)\b/.test(t)) return "subsection";
+      if (/^\([a-z]\)/.test(t)) return "clause";
+      if (/^\([ivxlcdm]+\)/i.test(t)) return "subclause";
+      if (/^\([A-Z]\)/.test(t)) return "subclause_upper";
+
+      return "line";
+    }
+
+    function buildLabel(type, text, i) {
+      const t = text.trim();
+
+      if (type === "section") {
+        const m = t.match(/^(Sec\.\s*\d+)/i);
+        if (m) return m[1];
+        if (t.startsWith("Sec.")) return "Sec. 1";
+        return "Section";
+      }
+
+      if (type === "subsection") {
+        const m = t.match(/^(\(\d+\))/);
+        if (m) return m[1];
+      }
+
+      if (type === "clause") {
+        const m = t.match(/^(\([a-z]\))/);
+        if (m) return m[1];
+      }
+
+      if (type === "subclause") {
+        const m = t.match(/^(\([ivxlcdm]+\))/i);
+        if (m) return m[1];
+      }
+
+      if (type === "subclause_upper") {
+        const m = t.match(/^(\([A-Z]\))/);
+        if (m) return m[1];
+      }
+
+      return `Line ${i}`;
+    }
+
+    function buildTitle(type, text) {
+      const t = text.trim();
+      if (type === "section") {
+        const m = t.match(/^(Sec\.\s*\d+)\s*(.*)$/i);
+        if (m && m[2]) return m[2].slice(0, 80);
+      }
+      return "";
+    }
+
+    function splitCompoundMarkers(line) {
+      const t = line.trim();
+
+      const numAlpha = t.match(/^\((\d+)\)\(([a-z])\)\s*(.*)$/);
+      if (numAlpha) {
+        return [`(${numAlpha[1]})`, `(${numAlpha[2]}) ${numAlpha[3]}`];
+      }
+
+      const clauseRoman = t.match(/^\(([a-z])\)\(([ivxlcdm]+)\)\s*(.*)$/i);
+      if (clauseRoman) {
+        return [`(${clauseRoman[1]})`, `(${clauseRoman[2]}) ${clauseRoman[3]}`];
+      }
+
+      const clauseUpper = t.match(/^\(([a-z])\)\(([A-Z])\)\s*(.*)$/);
+      if (clauseUpper) {
+        return [`(${clauseUpper[1]})`, `(${clauseUpper[2]}) ${clauseUpper[3]}`];
+      }
+
+      return [line];
+    }
+
+    function normalizeXmlToLines(xmlText) {
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, "text/xml");
+
+      const parserError = xml.querySelector("parsererror");
+      if (parserError) {
+        throw new Error("Invalid XML");
+      }
+
+      const rawText = xml.documentElement.textContent || "";
+      const cleaned = rawText
+        .replace(/\r/g, "\n")
+        .replace(/\t/g, " ")
+        .replace(/[ ]{2,}/g, " ")
+        .split("\n")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      const lines = [];
+      cleaned.forEach(line => {
+        splitCompoundMarkers(line).forEach(part => {
+          const p = part.trim();
+          if (p) lines.push(p);
+        });
+      });
+
+      return lines;
+    }
+
+    function linesToUnits(lines) {
+      const units = [];
+      let started = false;
+      let currentSectionId = null;
+      let currentSubsectionId = null;
+      let currentClauseId = null;
+      let currentSubclauseId = null;
+
+      lines.forEach((line, index) => {
+        const id = `unit_${index + 1}`;
+        const type = detectStructureType(line);
+
+        if (type === "section") started = true;
+
+        if (!started) {
+          units.push({
+            id,
+            parentId: null,
+            type: "header",
+            label: `Header ${index + 1}`,
+            title: "",
+            text: line
+          });
+          return;
+        }
+
+        let parentId = null;
+
+        if (type === "section") {
+          currentSectionId = id;
+          currentSubsectionId = null;
+          currentClauseId = null;
+          currentSubclauseId = null;
+        } else if (type === "subsection") {
+          parentId = currentSectionId;
+          currentSubsectionId = id;
+          currentClauseId = null;
+          currentSubclauseId = null;
+        } else if (type === "clause") {
+          parentId = currentSubsectionId || currentSectionId;
+          currentClauseId = id;
+          currentSubclauseId = null;
+        } else if (type === "subclause" || type === "subclause_upper") {
+          parentId = currentClauseId || currentSubsectionId || currentSectionId;
+          currentSubclauseId = id;
+        } else {
+          parentId = currentSubclauseId || currentClauseId || currentSubsectionId || currentSectionId;
+        }
+
+        units.push({
+          id,
+          parentId,
+          type,
+          label: buildLabel(type, line, index + 1),
+          title: buildTitle(type, line),
+          text: line
+        });
+      });
+
+      return units;
+    }
+
     function renderTree() {
       const el = document.getElementById("treePanel");
 
       if (!state.data?.units?.length) {
-        el.innerHTML = `<div class="empty">Load your existing JSON file.</div>`;
+        el.innerHTML = `<div class="empty">Load your JSON or WA XML file.</div>`;
         return;
       }
 
       const roots = buildTree(state.data.units);
-      let html = "";
+      let html = `
+        <div class="card">
+          <div class="kicker">Source</div>
+          <div class="heading origin">${escapeHtml(state.sourceType || "unknown")}</div>
+          <div class="small">${escapeHtml(state.sourceName || "")}</div>
+        </div>
+      `;
 
       function walk(nodes, depth = 0) {
         nodes.forEach(node => {
@@ -411,7 +590,7 @@
         <div class="card">
           <div class="kicker">Selected parsed unit</div>
           <div class="heading meaning">${escapeHtml(node.label || "")}</div>
-          <div class="small">This is the red panel contract. Meaning can be wired here later.</div>
+          <div class="small">Red panel stays the meaning slot. XML now feeds the UI directly.</div>
         </div>
 
         <div class="signal-title">Required</div>
@@ -442,25 +621,45 @@
       }
     }
 
-    function loadData(obj) {
+    function loadJson(obj, name) {
       if (!obj || !Array.isArray(obj.units)) {
         alert("This file must contain a top-level units array.");
         return;
       }
       state.data = obj;
       state.selectedId = obj.units[0]?.id || null;
+      state.sourceType = "JSON";
+      state.sourceName = name || "output_structured.json";
       renderAll();
     }
 
-    document.getElementById("fileInput").addEventListener("change", async (event) => {
+    function loadXml(xmlText, name) {
+      const lines = normalizeXmlToLines(xmlText);
+      const units = linesToUnits(lines);
+
+      state.data = { units };
+      state.selectedId = units[0]?.id || null;
+      state.sourceType = "WA XML";
+      state.sourceName = name || "live-wa-response.xml";
+      renderAll();
+    }
+
+    document.getElementById("jsonInput").addEventListener("change", async (event) => {
       const file = event.target.files[0];
       if (!file) return;
       const text = await file.text();
-      loadData(JSON.parse(text));
+      loadJson(JSON.parse(text), file.name);
+    });
+
+    document.getElementById("xmlInput").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      loadXml(text, file.name);
     });
 
     document.getElementById("demoBtn").addEventListener("click", () => {
-      loadData({
+      loadJson({
         units: [
           { id: "h1", parentId: null, type: "header", label: "Header 1", title: "", text: "SHB 2157" },
           { id: "h2", parentId: null, type: "header", label: "Header 2", title: "", text: "2026 Regular Session" },
@@ -470,7 +669,7 @@
           { id: "c2", parentId: "ss1", type: "clause", label: "(b)", title: "", text: '(b) "Consumer" does not include a natural person acting in a commercial context.' },
           { id: "s2", parentId: null, type: "section", label: "Sec. 2", title: "Developer Obligations", text: "A developer shall provide notice no later than 30 days before a material change." }
         ]
-      });
+      }, "demo");
     });
   </script>
 </body>
