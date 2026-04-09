@@ -1,22 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Traceability UI</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"/>
+<title>Legislative Explorer</title>
+
+<style>
+body {
+  margin:0;
+  background:#0E0D0B;
+  color:#C8C0A8;
+  font-family: Georgia, serif;
+}
+
+.header {
+  padding:16px 20px;
+  border-bottom:1px solid #1A1816;
+  display:flex;
+  justify-content:space-between;
+}
+
+.title {
+  color:#C8A86B;
+  font-size:20px;
+}
+
+.sub {
+  font-size:10px;
+  color:#444;
+  letter-spacing:.1em;
+}
+
+.tabs {
+  display:flex;
+  border-bottom:1px solid #1A1816;
+}
+
+.tab {
+  flex:1;
+  text-align:center;
+  padding:10px;
+  font-size:11px;
+  letter-spacing:.12em;
+  cursor:pointer;
+  color:#444;
+}
+
+.tab.active {
+  color:#C8A86B;
+  border-bottom:2px solid #C8A86B;
+}
+
+.content {
+  padding:14px;
+}
+
+/* TREE */
+.node {
+  padding:6px;
+  cursor:pointer;
+}
+
+.node:hover { background:#1A1816; }
+
+.selected {
+  background:#2A2215;
+  border-left:2px solid #C8A86B;
+}
+
+.section { color:#C8A86B; }
+.subsection { color:#7BA7BC; }
+.clause { color:#9B8BB4; }
+
+/* TEXT */
+.text-box {
+  background:#141311;
+  border:1px solid #1E1C18;
+  padding:14px;
+  line-height:1.7;
+}
+
+/* SIGNALS */
+.label {
+  font-size:10px;
+  letter-spacing:.12em;
+  color:#555;
+  margin:10px 0 6px;
+}
+
+.block {
+  border-left:3px solid;
+  padding:10px;
+  margin-bottom:8px;
+  background:rgba(255,255,255,0.02);
+}
+
+.required { border-color:#C8A86B; }
+.allowed { border-color:#8BAF8B; }
+.prohibited { border-color:#B47B7B; }
+.timing { border-color:#9B8BB4; }
+</style>
 </head>
+
 <body>
 
-<div class="container">
-  <h1>Traceability Engine</h1>
-
-  <textarea id="inputText" placeholder="Paste text here..."></textarea>
-
-  <button onclick="analyzeText()">Analyze</button>
-
-  <pre id="output">Output will appear here...</pre>
+<div class="header">
+  <div class="title">Traceability Constraint System</div>
+  <div class="sub">LEGISLATIVE EXPLORER</div>
 </div>
 
-<script src="script.js"></script>
+<div class="tabs">
+  <div class="tab active" onclick="setTab(0)">STRUCTURE</div>
+  <div class="tab" onclick="setTab(1)">TEXT</div>
+  <div class="tab" onclick="setTab(2)">SIGNALS</div>
+</div>
+
+<div class="content" id="content"></div>
+
+<script>
+let tab=0;
+let data=[];
+let selected=null;
+
+function setTab(i){
+  tab=i;
+  document.querySelectorAll(".tab").forEach((t,idx)=>{
+    t.classList.toggle("active",idx===i);
+  });
+  render();
+}
+
+function buildTree(units){
+  const map={}, roots=[];
+  units.forEach(u=>map[u.id]={...u,children:[]});
+  units.forEach(u=>{
+    if(u.parentId && map[u.parentId]) map[u.parentId].children.push(map[u.id]);
+    else roots.push(map[u.id]);
+  });
+  return roots;
+}
+
+function renderTree(nodes,depth=0){
+  let html="";
+  nodes.forEach(n=>{
+    html+=`<div class="node ${n.type} ${selected===n.id?'selected':''}" 
+      style="margin-left:${depth*14}px"
+      onclick="select('${n.id}')">
+      ${n.label||n.text}
+    </div>`;
+    if(n.children) html+=renderTree(n.children,depth+1);
+  });
+  return html;
+}
+
+function select(id){
+  selected=id;
+  render();
+}
+
+function extractSignals(text){
+  return {
+    required: text.match(/\b(shall|must)\b[^.;]*/gi),
+    allowed: text.match(/\bmay\b[^.;]*/gi),
+    prohibited: text.match(/\b(must not|may not)\b[^.;]*/gi),
+    timing: text.match(/\b\d+.*(days?|years?)\b/gi)
+  };
+}
+
+function render(){
+  const el=document.getElementById("content");
+  if(!data.length) return;
+
+  const node=data.find(x=>x.id===selected)||data[0];
+  selected=node.id;
+
+  if(tab===0){
+    const tree=buildTree(data);
+    el.innerHTML=renderTree(tree);
+  }
+
+  if(tab===1){
+    el.innerHTML=`<div class="text-box">${node.text}</div>`;
+  }
+
+  if(tab===2){
+    const s=extractSignals(node.text);
+
+    function blocks(arr,cls){
+      if(!arr) return `<i style="color:#444">Not specified</i>`;
+      return arr.map(x=>`<div class="block ${cls}">${x}</div>`).join("");
+    }
+
+    el.innerHTML=`
+      <div class="label">REQUIRED (SHALL / MUST)</div>
+      ${blocks(s.required,"required")}
+
+      <div class="label">ALLOWED (MAY)</div>
+      ${blocks(s.allowed,"allowed")}
+
+      <div class="label">PROHIBITED (MUST NOT / MAY NOT)</div>
+      ${blocks(s.prohibited,"prohibited")}
+
+      <div class="label">TIMING</div>
+      ${blocks(s.timing,"timing")}
+    `;
+  }
+}
+
+fetch("output_structured.json")
+.then(r=>r.json())
+.then(d=>{
+  data=d.units;
+  render();
+});
+</script>
+
 </body>
 </html>
