@@ -9,13 +9,13 @@ It processes real legislative XML (Washington State bill text) and converts it i
 Every output is directly tied to explicit source text.  
 If it cannot be traced to the source, it is not included.
 
-This repository contains the core engine layer of a larger system.
+This repository contains a source-anchored parsing prototype. The current Python pipeline wires input, structure, and selection; later analysis and integration are separate work.
 
 ---
 
 ## System Role
 
-This repository is the core processing engine that powers higher-level tools, including the Washington Civic Dashboard.
+This repository explores source-anchored processing intended for possible use by higher-level tools. It is not established here as the Washington Civic Dashboard's active runtime backend.
 
 It is responsible for:
 
@@ -26,7 +26,7 @@ It is responsible for:
 
 This is not a user-facing application.
 
-It is designed to be integrated as a backend engine into systems such as:
+Possible integration targets include:
 
 - Washington Civic Dashboard
 - Meaning Buddy
@@ -125,24 +125,10 @@ traceability_parser.py
 
 ## Status
 
-Engine: Functional  
-Data Source: Real legislative XML  
-Pipeline: Stable  
-Integration: In progress (Washington Civic Dashboard)
+Prototype in development. `pipeline/run_pipeline.py` currently connects input validation, structural parsing, and deterministic selection. Runtime integration with the Washington Civic Dashboard has not been verified in this repository.
 
 ---
 
-## Role in the Civic Dashboard
+## Integration boundary
 
-This engine is the backend processing layer.
-
-The dashboard:
-- sends data in  
-- receives structured output  
-
-The engine:
-- parses  
-- enforces constraints  
-- extracts signals  
-
-The dashboard only displays results.
+The Washington Civic Dashboard maintains its own JavaScript plain-meaning pipeline. Do not assume this repository is its deployed backend without verifying the integration in code.
